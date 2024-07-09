@@ -8,9 +8,9 @@ function App() {
             <header className="App-header">
                 {showEmloyees ? (
                     <>
-                        <Employee />
-                        <Employee />
-                        <Employee />
+                        <Employee name="Petar" role="Admin" />
+                        <Employee name="Stefan" />
+                        <Employee name="Random" />
                     </>
                 ) : (
                     <h1>You cannot see the employees!</h1>
