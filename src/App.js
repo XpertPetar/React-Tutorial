@@ -1,4 +1,4 @@
-import "./App.css";
+import "./index.css";
 import Employee from "./components/Employee";
 import { useState } from "react";
 
@@ -18,9 +18,11 @@ function App() {
                             }}
                         ></input>
 
-                        <Employee name="Petar" role="Admin" />
-                        <Employee name="Stefan" role={role} />
-                        <Employee name="Random" />
+                        <div class="bg-blue-300">
+                            <Employee name="Petar" role="Admin" />
+                            <Employee name="Stefan" role={role} />
+                            <Employee name="Random" />
+                        </div>
                     </>
                 ) : (
                     <h1>You cannot see the employees!</h1>
