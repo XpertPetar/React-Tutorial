@@ -2,6 +2,7 @@ import "./index.css";
 import Employee from "./components/Employee";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import AddEmployee from "./components/AddEmployee";
 
 function App() {
     const showEmloyees = true;
@@ -59,12 +60,22 @@ function App() {
 
     function updateEmployee(id, newName, newRole) {
         const updatedEmployees = employees.map((employee) => {
-            if (employee.id == id) {
+            if (employee.id === id) {
                 return { ...employee, name: newName, role: newRole };
             } else return employee;
         });
 
         setEmployees(updatedEmployees);
+    }
+
+    function addEmployee(name, role, img) {
+        const newEmployee = {
+            id: uuidv4,
+            name: name,
+            role: role,
+            img: img
+        };
+        setEmployees([...employees, newEmployee]);
     }
 
     return (
@@ -89,9 +100,7 @@ function App() {
                         </div>
 
                         <div className="flex justify-center mt-5">
-                            <button className="bg-transparent w-60 h-16 p-1 border rounded text-lg font-bold text-blue-500">
-                                + New Employee
-                            </button>
+                            <AddEmployee addEmployee={addEmployee}></AddEmployee>
                         </div>
                     </>
                 ) : (
