@@ -80,7 +80,7 @@ function Employees() {
     }
 
     return (
-        <div className="App min-h-screen bg-white-300">
+        <div>
             {showEmloyees ? (
                 <>
                     <div className="p-5 flex flex-wrap gap-2 justify-center">
