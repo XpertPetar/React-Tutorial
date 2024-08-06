@@ -3,6 +3,8 @@ import Employee from "./components/Employee";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import AddEmployee from "./components/AddEmployee";
+import EditEmployee from "./components/EditEmployee";
+import Header from "./components/Header";
 
 function App() {
     const showEmloyees = true;
@@ -79,34 +81,42 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <header className="App-header">
-                {showEmloyees ? (
-                    <>
-                        <div className="p-5 flex flex-wrap gap-2 justify-center">
-                            {employees.map((employee) => {
-                                return (
-                                    <Employee
-                                        key={employee.id}
-                                        id={employee.id}
-                                        name={employee.name}
-                                        role={employee.role}
-                                        img={employee.img}
-                                        alt="Employee Image"
-                                        updateEmployee={updateEmployee}
-                                    ></Employee>
-                                );
-                            })}
-                        </div>
+        <div className="App min-h-screen">
+            <Header></Header>
+            {showEmloyees ? (
+                <>
+                    <div className="p-5 flex flex-wrap gap-2 justify-center">
+                        {employees.map((employee) => {
+                            const editEmployee = (
+                                <EditEmployee
+                                    id={employee.id}
+                                    name={employee.name}
+                                    role={employee.role}
+                                    updateEmployee={updateEmployee}
+                                />
+                            );
 
-                        <div className="flex justify-center mt-5">
-                            <AddEmployee addEmployee={addEmployee}></AddEmployee>
-                        </div>
-                    </>
-                ) : (
-                    <h1>You cannot see the employees!</h1>
-                )}
-            </header>
+                            return (
+                                <Employee
+                                    key={employee.id}
+                                    id={employee.id}
+                                    name={employee.name}
+                                    role={employee.role}
+                                    img={employee.img}
+                                    alt="Employee Image"
+                                    editEmployee={editEmployee}
+                                ></Employee>
+                            );
+                        })}
+                    </div>
+
+                    <div className="flex justify-center my-5">
+                        <AddEmployee addEmployee={addEmployee}></AddEmployee>
+                    </div>
+                </>
+            ) : (
+                <h1>You cannot see the employees!</h1>
+            )}
         </div>
     );
 }
