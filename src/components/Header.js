@@ -10,8 +10,8 @@ import {
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navigation = [
-    { name: "Dashboard", href: "#", current: true },
-    { name: "Team", href: "#", current: false },
+    { name: "Employees", href: "/", current: true },
+    { name: "Customers", href: "/Customers", current: false },
     { name: "Projects", href: "#", current: false },
     { name: "Calendar", href: "#", current: false }
 ];
@@ -52,7 +52,7 @@ export default function Header(props) {
                                             className={classNames(
                                                 item.current
                                                     ? "no-underline bg-purple-800 text-white"
-                                                    : "no-underline text-gray-100 hover:bg-purple-800 hover:text-white",
+                                                    : "no-underline text-gray-100 hover:bg-purple-500 hover:text-white",
                                                 "rounded-md px-3 py-2 text-sm font-medium"
                                             )}
                                         >
