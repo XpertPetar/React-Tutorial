@@ -21,7 +21,7 @@ export default function Dictionary() {
                     setWord(e.target.value);
                 }}
             />
-            <div>Definition for the word: {word}</div>
+            <div>Definition for {word}: </div>
             <input
                 className="border-2"
                 type="text"
@@ -29,7 +29,7 @@ export default function Dictionary() {
                     setWord2(e.target.value);
                 }}
             />
-            <div>Definition for the word2: {word2}</div>
+            <div>Definition for {word2}: </div>
         </>
     );
 }

@@ -2,7 +2,8 @@ import "./index.css";
 import Header from "./components/Header";
 import Employees from "./pages/Employees";
 import Customers from "./pages/Customers";
-import Dictionary from "./components/Dictionary";
+import Dictionary from "./pages/Dictionary";
+import Definition from "./pages/Definition";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
                         <Route path="/" element={<Employees />} />
                         <Route path="/customers" element={<Customers />} />
                         <Route path="/dictionary" element={<Dictionary />} />
+                        <Route path="/definition" element={<Definition />} />
                     </Routes>
                 </Header>
             </BrowserRouter>
