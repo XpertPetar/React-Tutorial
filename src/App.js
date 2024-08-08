@@ -16,7 +16,7 @@ function App() {
                         <Route path="/" element={<Employees />} />
                         <Route path="/customers" element={<Customers />} />
                         <Route path="/dictionary" element={<Dictionary />} />
-                        <Route path="/definition/:search" element={<Definition />} />
+                        <Route path="/dictionary/:search" element={<Definition />} />
                         <Route path="/404" element={<Error404 />} />
                         <Route path="*" element={<Error404 />} />
                     </Routes>

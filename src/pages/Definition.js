@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Error404 from "../components/Error404";
+import DictionarySearchBar from "../components/DictionarySearchBar";
 
 export default function Definition() {
     let { search } = useParams();
@@ -74,7 +75,10 @@ export default function Definition() {
                     })}
                 </>
             ) : null}
-            <Link to="/dictionary">Search another word</Link>
+            <div className="my-4">
+                <h5 className="flex justify-center">Search again:</h5>
+                <DictionarySearchBar />
+            </div>
         </>
     );
 }
