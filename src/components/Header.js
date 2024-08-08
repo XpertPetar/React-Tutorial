@@ -5,8 +5,7 @@ import { NavLink } from "react-router-dom";
 const navigation = [
     { name: "Employees", href: "/" },
     { name: "Customers", href: "/customers" },
-    { name: "Projects", href: "/projects" },
-    { name: "Calendar", href: "/calendar" }
+    { name: "Dictionary", href: "/dictionary" }
 ];
 
 function classNames(...classes) {
@@ -92,7 +91,7 @@ export default function Header(props) {
                 </DisclosurePanel>
             </Disclosure>
             <div className="bg-white">
-                <div className="min-h-screen my-2 p-2 max-w-7xl mx-auto">{props.children}</div>
+                <div className="my-3 p-2 max-w-7xl mx-auto">{props.children}</div>
             </div>
         </>
     );
