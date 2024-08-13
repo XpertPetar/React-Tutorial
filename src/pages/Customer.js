@@ -95,11 +95,11 @@ export default function Customer() {
                     >
                         Delete
                     </button>
-                    <Link to="/customers" className="block my-5">
-                        Go back
-                    </Link>
                 </div>
             ) : null}
+            <Link to="/customers" className="block my-5">
+                Go back
+            </Link>
         </>
     );
 }

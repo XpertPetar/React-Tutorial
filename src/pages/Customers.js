@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Error404 from "../components/Error404";
 import { baseUrl, token } from "../Global";
+import AddCustomer from "../components/AddCustomer";
 
 export default function Customers() {
     const [customers, setCustomers] = useState();
@@ -41,6 +42,22 @@ export default function Customers() {
             });
     }, []);
 
+    function addCustomer(name, industry) {
+        const data = { name: name, industry: industry };
+        const url = baseUrl + "/api/customers/";
+        fetch(url, { headers, method: "POST", body: JSON.stringify(data) })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Something went wrong! Customer wasnt created.");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                window.location.reload();
+            })
+            .catch((e) => console.log(e));
+    }
+
     if (notFound) {
         return (
             <>
@@ -68,6 +85,7 @@ export default function Customers() {
                           })
                         : null}
                 </ul>
+                <AddCustomer addCustomer={addCustomer} />
             </div>
         </>
     );
