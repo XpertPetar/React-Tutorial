@@ -5,10 +5,6 @@ export default function DictionarySearchBar() {
     const [word, setWord] = useState();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("State updated for word: " + word);
-    }, [word]);
-
     return (
         <form
             onSubmit={() => {

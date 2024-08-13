@@ -38,17 +38,15 @@ export default function Definition() {
             .then((data) => {
                 setDefinition(data[0].meanings);
             })
-            .catch((error) => {
-                console.error(error);
-            });
+            .catch((error) => {});
     }, []);
 
     if (notFound) {
         return (
             <>
-                <Error404 errorMessage={errorMessage} />
+                <Error404 errorMessage={errorMessage} errorType="Page not found." />
                 <Link to="/dictionary" className="inline-block">
-                    Search another word
+                    ← Search another word
                 </Link>
             </>
         );
@@ -57,7 +55,7 @@ export default function Definition() {
     return (
         <>
             {definition ? (
-                <>
+                <div className="mb-5">
                     <h2 className="flex justify-center mb-4">
                         Here is a definition for
                         <span className="font-bold uppercase">&nbsp;{search}</span>
@@ -70,9 +68,9 @@ export default function Definition() {
                             </p>
                         );
                     })}
-                </>
+                </div>
             ) : null}
-            <div className="my-4">
+            <div>
                 <h5 className="flex justify-center">Search again:</h5>
                 <DictionarySearchBar />
             </div>

@@ -35,11 +35,9 @@ export default function Customers() {
             })
             .then((data) => {
                 setCustomers(data.customers);
-                console.log(data.customers);
+                setNotFound(false);
             })
-            .catch((error) => {
-                console.error(error);
-            });
+            .catch((error) => {});
     }, []);
 
     function addCustomer(name, industry) {
@@ -55,13 +53,13 @@ export default function Customers() {
             .then((data) => {
                 setCustomers([...customers, data.customer]);
             })
-            .catch((e) => console.log(e));
+            .catch((e) => {});
     }
 
     if (notFound) {
         return (
             <>
-                <Error404 errorMessage={errorMessage} />
+                <Error404 errorMessage={errorMessage} errorType="Page not found." />
             </>
         );
     }
@@ -69,7 +67,7 @@ export default function Customers() {
     return (
         <>
             <h2 className="flex justify-center capitalize mb-5">Customers</h2>
-            <div>
+            <div className="mb-5">
                 <ul>
                     {customers
                         ? customers.map((customer) => {
@@ -85,8 +83,8 @@ export default function Customers() {
                           })
                         : null}
                 </ul>
-                <AddCustomer addCustomer={addCustomer} />
             </div>
+            <AddCustomer addCustomer={addCustomer} />
         </>
     );
 }

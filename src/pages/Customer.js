@@ -8,6 +8,7 @@ export default function Customer() {
     const [tempCustomer, setTempCustomer] = useState();
     const [changed, setChanged] = useState(false);
     const [notFound, setNotFound] = useState();
+    const [error, setError] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
     const { id } = useParams();
@@ -35,8 +36,8 @@ export default function Customer() {
                     navigate("/login");
                 } else if (response.status === 404) {
                     setNotFound(true);
-                    setErrorMessage("Wrong url path or customers api is offline.");
-                    throw new Error("Wrong url path or customers api is offline.");
+                    setErrorMessage("The customer with id " + id + " was not found.");
+                    throw new Error("The customer with id " + id + " was not found.");
                 } else if (!response.status === 200) {
                     setNotFound(true);
                     setErrorMessage("Something went wrong, try again later.");
@@ -46,31 +47,38 @@ export default function Customer() {
             .then((data) => {
                 setCustomer(data.customer);
                 setTempCustomer(data.customer);
-                console.log(data.customer);
             })
             .catch((error) => {
                 console.error(error);
             });
     }, []);
 
-    function updateCustomer() {
+    function updateCustomer(e) {
+        e.preventDefault();
+
         fetch(url, { headers, method: "POST", body: JSON.stringify(tempCustomer) })
             .then((response) => {
+                if (!response.ok) {
+                    setError(true);
+                    setErrorMessage("Something went wrong while updating.");
+                    throw new Error("Something went wrong while updating.");
+                }
                 return response.json();
             })
             .then((data) => {
                 setCustomer(data.customer);
                 setChanged(false);
-                console.log(data);
-            });
+                setError(false);
+            })
+            .catch((e) => {});
     }
 
     if (notFound) {
         return (
             <>
-                <Error404 errorMessage={errorMessage} />
+                <Error404 errorMessage={errorMessage} errorType="Server side error" />
                 <Link to="/customers" className="block my-4 inline-block">
-                    Go back
+                    ← Go back
                 </Link>
             </>
         );
@@ -85,36 +93,54 @@ export default function Customer() {
                         <span className="uppercase font-bold">&nbsp;{customer.name}</span>
                     </h2>
                     <div>
-                        <p>
-                            <span className="font-semibold">Id: &nbsp;</span>
-                            <input
-                                value={tempCustomer.id}
-                                disabled
-                                className="border-2 rounded px-2"
-                            ></input>
-                        </p>
-                        <p>
-                            <span className="font-semibold">Name: &nbsp;</span>
-                            <input
-                                value={tempCustomer.name}
-                                onChange={(e) => {
-                                    setTempCustomer({ ...tempCustomer, name: e.target.value });
-                                    setChanged(true);
-                                }}
-                                className="border-2 rounded px-2"
-                            ></input>
-                        </p>
-                        <p>
-                            <span className="font-semibold">Industry: &nbsp;</span>
-                            <input
-                                value={tempCustomer.industry}
-                                onChange={(e) => {
-                                    setTempCustomer({ ...tempCustomer, industry: e.target.value });
-                                    setChanged(true);
-                                }}
-                                className="border-2 rounded px-2"
-                            ></input>
-                        </p>
+                        <form
+                            id="customerForm"
+                            onSubmit={updateCustomer}
+                            className="space-y-4 mb-3"
+                        >
+                            <div className="flex items-center space-x-4">
+                                <label htmlFor="id" className="font-semibold w-24">
+                                    Id:
+                                </label>
+                                <input
+                                    id="id"
+                                    value={tempCustomer.id}
+                                    disabled
+                                    className="border-2 border-gray-300 rounded px-3 py-1 w-60"
+                                />
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <label htmlFor="name" className="font-semibold w-24">
+                                    Name:
+                                </label>
+                                <input
+                                    id="name"
+                                    value={tempCustomer.name}
+                                    onChange={(e) => {
+                                        setTempCustomer({ ...tempCustomer, name: e.target.value });
+                                        setChanged(true);
+                                    }}
+                                    className="border-2 border-gray-300 rounded px-3 py-1 w-60"
+                                />
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <label htmlFor="industry" className="font-semibold w-24">
+                                    Industry:
+                                </label>
+                                <input
+                                    id="industry"
+                                    value={tempCustomer.industry}
+                                    onChange={(e) => {
+                                        setTempCustomer({
+                                            ...tempCustomer,
+                                            industry: e.target.value
+                                        });
+                                        setChanged(true);
+                                    }}
+                                    className="border-2 border-gray-300 rounded px-3 py-1 w-60"
+                                />
+                            </div>
+                        </form>
                     </div>
                     {changed ? (
                         <div>
@@ -128,8 +154,8 @@ export default function Customer() {
                                 Cancel
                             </button>
                             <button
-                                className="shadow bg-green-600 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 mx-2 my-2 rounded"
-                                onClick={updateCustomer}
+                                className="shadow bg-green-600 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 mx-3 my-2 rounded"
+                                form="customerForm"
                             >
                                 Save
                             </button>
@@ -147,18 +173,19 @@ export default function Customer() {
                                     }
                                     navigate("/customers");
                                 })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                                .catch((error) => {});
                         }}
-                        className="shadow bg-red-600 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 my-1 rounded"
+                        className="shadow bg-red-600 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 my-2 rounded"
                     >
                         Delete
                     </button>
                 </div>
             ) : null}
+            {error ? (
+                <Error404 errorMessage={errorMessage} errorType="Server side error"></Error404>
+            ) : null}
             <Link to="/customers" className="block my-5 inline-block">
-                Go back
+                ← Go back
             </Link>
         </>
     );
