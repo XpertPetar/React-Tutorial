@@ -5,12 +5,22 @@ import { baseUrl, token } from "../Global";
 
 export default function Customer() {
     const [customer, setCustomer] = useState();
+    const [tempCustomer, setTempCustomer] = useState();
+    const [changed, setChanged] = useState(false);
     const [notFound, setNotFound] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const url = baseUrl + "/api/customers/" + id;
+    useEffect(() => {
+        if (!customer || !tempCustomer) return;
+
+        if (customer.name === tempCustomer.name && customer.industry === tempCustomer.industry) {
+            setChanged(false);
+        }
+    });
+
+    const url = baseUrl + "/api/customers/" + id + "/";
     const headers = {
         Authorization: "Bearer " + token,
         "Content-Type": "application/json"
@@ -35,6 +45,7 @@ export default function Customer() {
             })
             .then((data) => {
                 setCustomer(data.customer);
+                setTempCustomer(data.customer);
                 console.log(data.customer);
             })
             .catch((error) => {
@@ -42,11 +53,23 @@ export default function Customer() {
             });
     }, []);
 
+    function updateCustomer() {
+        fetch(url, { headers, method: "POST", body: JSON.stringify(tempCustomer) })
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                setCustomer(data.customer);
+                setChanged(false);
+                console.log(data);
+            });
+    }
+
     if (notFound) {
         return (
             <>
                 <Error404 errorMessage={errorMessage} />
-                <Link to="/customers" className="block my-4">
+                <Link to="/customers" className="block my-4 inline-block">
                     Go back
                 </Link>
             </>
@@ -64,17 +87,54 @@ export default function Customer() {
                     <div>
                         <p>
                             <span className="font-semibold">Id: &nbsp;</span>
-                            {customer.id}
+                            <input
+                                value={tempCustomer.id}
+                                disabled
+                                className="border-2 rounded px-2"
+                            ></input>
                         </p>
                         <p>
                             <span className="font-semibold">Name: &nbsp;</span>
-                            {customer.name}
+                            <input
+                                value={tempCustomer.name}
+                                onChange={(e) => {
+                                    setTempCustomer({ ...tempCustomer, name: e.target.value });
+                                    setChanged(true);
+                                }}
+                                className="border-2 rounded px-2"
+                            ></input>
                         </p>
                         <p>
                             <span className="font-semibold">Industry: &nbsp;</span>
-                            {customer.industry}
+                            <input
+                                value={tempCustomer.industry}
+                                onChange={(e) => {
+                                    setTempCustomer({ ...tempCustomer, industry: e.target.value });
+                                    setChanged(true);
+                                }}
+                                className="border-2 rounded px-2"
+                            ></input>
                         </p>
                     </div>
+                    {changed ? (
+                        <div>
+                            <button
+                                className="shadow bg-yellow-600 hover:bg-yellow-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 my-2 rounded"
+                                onClick={(e) => {
+                                    setTempCustomer(customer);
+                                    setChanged(false);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="shadow bg-green-600 hover:bg-green-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 mx-2 my-2 rounded"
+                                onClick={updateCustomer}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    ) : null}
                     <button
                         onClick={(e) => {
                             const url = baseUrl + "/api/customers/" + id;
@@ -91,13 +151,13 @@ export default function Customer() {
                                     console.log(error);
                                 });
                         }}
-                        className="shadow bg-red-600 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                        className="shadow bg-red-600 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-3 my-1 rounded"
                     >
                         Delete
                     </button>
                 </div>
             ) : null}
-            <Link to="/customers" className="block my-5">
+            <Link to="/customers" className="block my-5 inline-block">
                 Go back
             </Link>
         </>

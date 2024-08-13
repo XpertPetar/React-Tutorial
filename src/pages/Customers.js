@@ -53,7 +53,7 @@ export default function Customers() {
                 return response.json();
             })
             .then((data) => {
-                window.location.reload();
+                setCustomers([...customers, data.customer]);
             })
             .catch((e) => console.log(e));
     }

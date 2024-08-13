@@ -47,7 +47,9 @@ export default function Definition() {
         return (
             <>
                 <Error404 errorMessage={errorMessage} />
-                <Link to="/dictionary">Search another word</Link>
+                <Link to="/dictionary" className="inline-block">
+                    Search another word
+                </Link>
             </>
         );
     }
