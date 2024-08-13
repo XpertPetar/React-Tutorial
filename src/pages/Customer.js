@@ -10,11 +10,13 @@ export default function Customer() {
     const navigate = useNavigate();
     const { id } = useParams();
 
+    const url = baseUrl + "/api/customers/" + id;
     const headers = {
-        Authorization: "Bearer " + token
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json"
     };
     useEffect(() => {
-        fetch(baseUrl + "/api/customers/" + id, { headers })
+        fetch(url, { headers })
             .then((response) => {
                 if (response.status === 200) {
                     setNotFound(false);
@@ -23,8 +25,8 @@ export default function Customer() {
                     navigate("/login");
                 } else if (response.status === 404) {
                     setNotFound(true);
-                    setErrorMessage("Customers api is offline.");
-                    throw new Error("Customers api is offline.");
+                    setErrorMessage("Wrong url path or customers api is offline.");
+                    throw new Error("Wrong url path or customers api is offline.");
                 } else if (!response.status === 200) {
                     setNotFound(true);
                     setErrorMessage("Something went wrong, try again later.");
@@ -44,7 +46,7 @@ export default function Customer() {
         return (
             <>
                 <Error404 errorMessage={errorMessage} />
-                <Link to="/customerrs" className="block my-4">
+                <Link to="/customers" className="block my-4">
                     Go back
                 </Link>
             </>
@@ -73,7 +75,27 @@ export default function Customer() {
                             {customer.industry}
                         </p>
                     </div>
-                    <Link to="/customers" className="block my-4">
+                    <button
+                        onClick={(e) => {
+                            const url = baseUrl + "/api/customers/" + id;
+                            fetch(url, { headers, method: "DELETE" })
+                                .then((response) => {
+                                    if (!response.ok) {
+                                        throw new Error(
+                                            "Something went wrong! Customer wasnt deleted."
+                                        );
+                                    }
+                                    navigate("/customers");
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        }}
+                        className="shadow bg-red-600 hover:bg-red-500 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                    >
+                        Delete
+                    </button>
+                    <Link to="/customers" className="block my-5">
                         Go back
                     </Link>
                 </div>

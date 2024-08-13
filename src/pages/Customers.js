@@ -9,11 +9,13 @@ export default function Customers() {
     const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
 
+    const url = baseUrl + "/api/customers";
     const headers = {
-        Authorization: "Bearer " + token
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json"
     };
     useEffect(() => {
-        fetch(baseUrl + "/api/customers", { headers })
+        fetch(url, { headers })
             .then((response) => {
                 if (response.status === 200) {
                     setNotFound(false);
@@ -22,8 +24,8 @@ export default function Customers() {
                     navigate("/login");
                 } else if (response.status === 404) {
                     setNotFound(true);
-                    setErrorMessage("Customers api is offline.");
-                    throw new Error("Customers api is offline.");
+                    setErrorMessage("Wrong url path or customers api is offline.");
+                    throw new Error("Wrong url path or customers api is offline.");
                 } else if (!response.status === 200) {
                     setNotFound(true);
                     setErrorMessage("Something went wrong, try again later.");
@@ -51,21 +53,21 @@ export default function Customers() {
         <>
             <h2 className="flex justify-center capitalize mb-5">Customers</h2>
             <div>
-                {customers
-                    ? customers.map((customer) => {
-                          return (
-                              <ul>
-                                  <li className="list-disc">
-                                      <div key={customer.id}>
+                <ul>
+                    {customers
+                        ? customers.map((customer) => {
+                              return (
+                                  <li key={customer.id} className="list-disc my-3">
+                                      <div>
                                           <Link to={"/customers/" + customer.id}>
                                               {customer.name}
                                           </Link>
                                       </div>
                                   </li>
-                              </ul>
-                          );
-                      })
-                    : null}
+                              );
+                          })
+                        : null}
+                </ul>
             </div>
         </>
     );
