@@ -46,13 +46,8 @@ export default function Definition() {
     if (notFound) {
         return (
             <>
-                <Error404 />
-                <div className="flex justify-center text-red-600 text-lg">
-                    {errorMessage ? `Error message: ${errorMessage}` : null}
-                </div>
-                <Link to="/dictionary" className="p-2">
-                    Search another word
-                </Link>
+                <Error404 errorMessage={errorMessage} />
+                <Link to="/dictionary">Search another word</Link>
             </>
         );
     }
