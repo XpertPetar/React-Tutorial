@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { baseUrl } from "../Global";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Login() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
     function login(e) {
         e.preventDefault();
 
@@ -20,7 +24,11 @@ export default function Login() {
                 return response.json();
             })
             .then((data) => {
-                console.log(data);
+                localStorage.setItem("accessToken", data.access);
+                localStorage.setItem("refreshToken", data.refresh);
+                if (localStorage.getItem("accessToken")) {
+                    navigate(location?.state?.previousUrl ? location.state.previousUrl : "/");
+                }
             });
     }
 
@@ -50,7 +58,7 @@ export default function Login() {
                                     Username
                                 </label>
                                 <input
-                                    value={username}
+                                    value={username ? username : ""}
                                     type="text"
                                     name="username"
                                     id="username"
@@ -71,7 +79,7 @@ export default function Login() {
                                     Password
                                 </label>
                                 <input
-                                    value={password}
+                                    value={password ? password : ""}
                                     type="password"
                                     name="password"
                                     id="password"

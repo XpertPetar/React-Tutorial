@@ -1,7 +1,7 @@
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Error404 from "../components/Error404";
-import { baseUrl, token } from "../Global";
+import { baseUrl } from "../Global";
 
 export default function Customer() {
     const [customer, setCustomer] = useState();
@@ -11,6 +11,7 @@ export default function Customer() {
     const [error, setError] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
+    const currentUrl = useLocation().pathname;
     const { id } = useParams();
 
     useEffect(() => {
@@ -23,17 +24,26 @@ export default function Customer() {
 
     const url = baseUrl + "/api/customers/" + id + "/";
     const headers = {
-        Authorization: "Bearer " + token,
+        Authorization: "Bearer " + localStorage.getItem("accessToken"),
         "Content-Type": "application/json"
     };
     useEffect(() => {
-        fetch(url, { headers })
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                "Content-Type": "application/json"
+            }
+        })
             .then((response) => {
                 if (response.status === 200) {
                     setNotFound(false);
                     return response.json();
                 } else if (response.status === 401) {
-                    navigate("/login");
+                    navigate("/login", {
+                        state: {
+                            previousUrl: currentUrl
+                        }
+                    });
                 } else if (response.status === 404) {
                     setNotFound(true);
                     setErrorMessage("The customer with id " + id + " was not found.");
@@ -56,7 +66,14 @@ export default function Customer() {
     function updateCustomer(e) {
         e.preventDefault();
 
-        fetch(url, { headers, method: "POST", body: JSON.stringify(tempCustomer) })
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(tempCustomer)
+        })
             .then((response) => {
                 if (!response.ok) {
                     setError(true);

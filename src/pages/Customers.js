@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import Error404 from "../components/Error404";
-import { baseUrl, token } from "../Global";
+import { baseUrl } from "../Global";
 import AddCustomer from "../components/AddCustomer";
 
 export default function Customers() {
@@ -9,20 +9,26 @@ export default function Customers() {
     const [notFound, setNotFound] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
+    const currentUrl = useLocation();
 
     const url = baseUrl + "/api/customers";
-    const headers = {
-        Authorization: "Bearer " + token,
-        "Content-Type": "application/json"
-    };
     useEffect(() => {
-        fetch(url, { headers })
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                "Content-Type": "application/json"
+            }
+        })
             .then((response) => {
                 if (response.status === 200) {
                     setNotFound(false);
                     return response.json();
                 } else if (response.status === 401) {
-                    navigate("/login");
+                    navigate("/login", {
+                        state: {
+                            previousUrl: currentUrl
+                        }
+                    });
                 } else if (response.status === 404) {
                     setNotFound(true);
                     setErrorMessage("Wrong url path or customers api is offline.");
@@ -43,7 +49,14 @@ export default function Customers() {
     function addCustomer(name, industry) {
         const data = { name: name, industry: industry };
         const url = baseUrl + "/api/customers/";
-        fetch(url, { headers, method: "POST", body: JSON.stringify(data) })
+        fetch(url, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("accessToken"),
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+        })
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Something went wrong! Customer wasnt created.");
