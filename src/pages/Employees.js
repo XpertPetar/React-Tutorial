@@ -1,11 +1,13 @@
 import "../index.css";
 import Employee from "../components/Employee";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import AddEmployee from "../components/AddEmployee";
 import EditEmployee from "../components/EditEmployee";
+import { LoginContext } from "../App";
 
 function Employees() {
+    const [loggedIn, setLoggedIn] = useContext(LoginContext);
     const showEmloyees = true;
 
     const [employees, setEmployees] = useState([

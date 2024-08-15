@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import Error404 from "../components/Error404";
 import DictionarySearchBar from "../components/DictionarySearchBar";
+import { LoginContext } from "../App";
 
 export default function Definition() {
+    const [loggedIn, setLoggedIn] = useContext(LoginContext);
     let { search } = useParams();
     const [definition, setDefinition] = useState();
     const [notFound, setNotFound] = useState(false);

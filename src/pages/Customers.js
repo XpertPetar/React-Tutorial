@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import Error404 from "../components/Error404";
 import { baseUrl } from "../Global";
 import AddCustomer from "../components/AddCustomer";
+import { LoginContext } from "../App";
 
 export default function Customers() {
+    const [loggedIn, setLoggedIn] = useContext(LoginContext);
     const [customers, setCustomers] = useState();
     const [notFound, setNotFound] = useState();
     const [errorMessage, setErrorMessage] = useState();
@@ -24,6 +26,7 @@ export default function Customers() {
                     setNotFound(false);
                     return response.json();
                 } else if (response.status === 401) {
+                    setLoggedIn(false);
                     navigate("/login", {
                         state: {
                             previousUrl: currentUrl
@@ -58,7 +61,14 @@ export default function Customers() {
             body: JSON.stringify(data)
         })
             .then((response) => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    setLoggedIn(false);
+                    navigate("/login", {
+                        state: {
+                            previousUrl: currentUrl
+                        }
+                    });
+                } else if (!response.ok) {
                     throw new Error("Something went wrong! Customer wasnt created.");
                 }
                 return response.json();

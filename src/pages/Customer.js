@@ -1,9 +1,11 @@
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Error404 from "../components/Error404";
 import { baseUrl } from "../Global";
+import { LoginContext } from "../App";
 
 export default function Customer() {
+    const [loggedIn, setLoggedIn] = useContext(LoginContext);
     const [customer, setCustomer] = useState();
     const [tempCustomer, setTempCustomer] = useState();
     const [changed, setChanged] = useState(false);
@@ -19,6 +21,10 @@ export default function Customer() {
 
         if (customer.name === tempCustomer.name && customer.industry === tempCustomer.industry) {
             setChanged(false);
+        }
+
+        if (localStorage.getItem("accessToken") == "undefined") {
+            setLoggedIn(false);
         }
     });
 
@@ -39,6 +45,7 @@ export default function Customer() {
                     setNotFound(false);
                     return response.json();
                 } else if (response.status === 401) {
+                    setLoggedIn(false);
                     navigate("/login", {
                         state: {
                             previousUrl: currentUrl
@@ -75,7 +82,14 @@ export default function Customer() {
             body: JSON.stringify(tempCustomer)
         })
             .then((response) => {
-                if (!response.ok) {
+                if (response.status === 401) {
+                    setLoggedIn(false);
+                    navigate("/login", {
+                        state: {
+                            previousUrl: currentUrl
+                        }
+                    });
+                } else if (!response.ok) {
                     setError(true);
                     setErrorMessage("Something went wrong while updating.");
                     throw new Error("Something went wrong while updating.");
@@ -183,6 +197,17 @@ export default function Customer() {
                             const url = baseUrl + "/api/customers/" + id;
                             fetch(url, { headers, method: "DELETE" })
                                 .then((response) => {
+                                    if (response.status === 401) {
+                                        setLoggedIn(false);
+                                        navigate("/login", {
+                                            state: {
+                                                previousUrl: currentUrl
+                                            }
+                                        });
+                                        throw new Error(
+                                            "Something went wrong! Customer wasnt deleted."
+                                        );
+                                    }
                                     if (!response.ok) {
                                         throw new Error(
                                             "Something went wrong! Customer wasnt deleted."
