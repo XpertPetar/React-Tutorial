@@ -1,52 +1,45 @@
-import { useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import Error404 from "../components/Error404";
+import { useParams, Link } from "react-router-dom";
+import Error from "../components/Error";
 import DictionarySearchBar from "../components/DictionarySearchBar";
-import { LoginContext } from "../App";
+import useFetch from "../hooks/UseFetch";
 
 export default function Definition() {
-    const [loggedIn, setLoggedIn] = useContext(LoginContext);
     let { search } = useParams();
-    const [definition, setDefinition] = useState();
-    const [notFound, setNotFound] = useState(false);
-    const [errorMessage, setErrorMessage] = useState();
-    const navigate = useNavigate();
+    const url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + search;
+    const [definition, errorStatusCode] = useFetch(url);
 
-    useEffect(() => {
-        const url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + search;
-        //const url = "https://httpstat.us/500"; // Testing error codes url
-        setNotFound(false);
-
-        fetch(url)
-            .then((response) => {
-                if (response.status === 200) {
-                    setNotFound(false);
-                    return response.json();
-                } else if (response.status === 404) {
-                    setNotFound(true);
-                    setErrorMessage("Word doesn't have a definition.");
-                    throw new Error("Word doesn't have a definition.");
-                } else if (response.status >= 500 && response.status < 600) {
-                    setNotFound(true);
-                    setErrorMessage("Server side error. We are sorry.");
-                    throw new Error("Server side error. We are sorry.");
-                } else if (!response.ok) {
-                    setNotFound(true);
-                    setErrorMessage("Unknown error occured.");
-                    throw new Error("Unknown error occured.");
-                }
-            })
-            .then((data) => {
-                setDefinition(data[0].meanings);
-            })
-            .catch((error) => {});
-    }, []);
-
-    if (notFound) {
+    if (errorStatusCode === 404 && errorStatusCode !== undefined) {
         return (
             <>
-                <Error404 errorMessage={errorMessage} errorType="Page not found." />
+                <Error
+                    statusCode={errorStatusCode}
+                    errorMessage="Word doesn't have a definition."
+                    errorType="Page not found."
+                />
+                <Link to="/dictionary" className="inline-block">
+                    ← Search another word
+                </Link>
+            </>
+        );
+    } else if (errorStatusCode >= 500 && errorStatusCode < 600 && errorStatusCode !== undefined) {
+        return (
+            <>
+                <Error
+                    statusCode={errorStatusCode}
+                    errorMessage="Try again later."
+                    errorType="Server side error."
+                />
+                <Link to="/dictionary" className="inline-block">
+                    ← Search another word
+                </Link>
+            </>
+        );
+    } else if (errorStatusCode !== 200 && errorStatusCode !== undefined) {
+        console.log(errorStatusCode);
+        return (
+            <>
+                <Error statusCode={errorStatusCode} errorMessage="Unknown error occured." />
                 <Link to="/dictionary" className="inline-block">
                     ← Search another word
                 </Link>
@@ -56,13 +49,13 @@ export default function Definition() {
 
     return (
         <>
-            {definition ? (
+            {definition?.[0]?.meanings ? (
                 <div className="mb-5">
                     <h2 className="flex justify-center mb-4">
                         Here is a definition for
                         <span className="font-bold uppercase">&nbsp;{search}</span>
                     </h2>
-                    {definition.map((def) => {
+                    {definition[0].meanings.map((def) => {
                         return (
                             <p key={uuidv4()}>
                                 <span className="italic font-bold">{def.partOfSpeech}: &nbsp;</span>

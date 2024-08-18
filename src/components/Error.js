@@ -1,7 +1,9 @@
 export default function Error404(props) {
     return (
         <div className="text-red-600 my-3">
-            <h3 className="flex ">Error!</h3>
+            <h3 className="flex ">
+                Error <span>&nbsp;{props.statusCode ? props.statusCode : null}</span>
+            </h3>
             {props.errorType ? (
                 <p className="text-lg">{props.errorType}</p>
             ) : (

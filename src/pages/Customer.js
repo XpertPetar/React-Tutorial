@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import Error404 from "../components/Error404";
+import Error from "../components/Error";
 import { baseUrl } from "../Global";
 import { LoginContext } from "../App";
 
@@ -107,7 +107,7 @@ export default function Customer() {
     if (notFound) {
         return (
             <>
-                <Error404 errorMessage={errorMessage} errorType="Server side error" />
+                <Error errorMessage={errorMessage} errorType="Server side error" />
                 <Link to="/customers" className="block my-4 inline-block">
                     ← Go back
                 </Link>
@@ -224,7 +224,7 @@ export default function Customer() {
                 </div>
             ) : null}
             {error ? (
-                <Error404 errorMessage={errorMessage} errorType="Server side error"></Error404>
+                <Error errorMessage={errorMessage} errorType="Server side error"></Error>
             ) : null}
             <Link to="/customers" className="block my-5 inline-block">
                 ← Go back
