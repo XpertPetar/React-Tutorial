@@ -3,11 +3,16 @@ import { useParams, Link } from "react-router-dom";
 import Error from "../components/Error";
 import DictionarySearchBar from "../components/DictionarySearchBar";
 import useFetch from "../hooks/UseFetch";
+import { useEffect } from "react";
 
 export default function Definition() {
     let { search } = useParams();
     const url = "https://api.dictionaryapi.dev/api/v2/entries/en/" + search;
-    const [definition, errorStatusCode] = useFetch(url);
+    const { request, data: [{ meanings: definition }] = [{}], errorStatusCode } = useFetch(url);
+
+    useEffect(() => {
+        request();
+    }, []);
 
     if (errorStatusCode === 404 && errorStatusCode !== undefined) {
         return (
@@ -49,13 +54,13 @@ export default function Definition() {
 
     return (
         <>
-            {definition?.[0]?.meanings ? (
+            {definition ? (
                 <div className="mb-5">
                     <h2 className="flex justify-center mb-4">
                         Here is a definition for
                         <span className="font-bold uppercase">&nbsp;{search}</span>
                     </h2>
-                    {definition[0].meanings.map((def) => {
+                    {definition.map((def) => {
                         return (
                             <p key={uuidv4()}>
                                 <span className="italic font-bold">{def.partOfSpeech}: &nbsp;</span>

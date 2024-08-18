@@ -12,6 +12,7 @@ export default function Customer() {
     const [notFound, setNotFound] = useState();
     const [error, setError] = useState();
     const [errorMessage, setErrorMessage] = useState();
+    const [errorStatusCode, setErrorStatusCode] = useState();
     const navigate = useNavigate();
     const currentUrl = useLocation().pathname;
     const { id } = useParams();
@@ -53,10 +54,12 @@ export default function Customer() {
                     });
                 } else if (response.status === 404) {
                     setNotFound(true);
+                    setErrorStatusCode(response.status);
                     setErrorMessage("The customer with id " + id + " was not found.");
                     throw new Error("The customer with id " + id + " was not found.");
                 } else if (!response.status === 200) {
                     setNotFound(true);
+                    setErrorStatusCode(response.status);
                     setErrorMessage("Something went wrong, try again later.");
                     throw new Error("Something went wrong, try again later.");
                 }
@@ -107,7 +110,11 @@ export default function Customer() {
     if (notFound) {
         return (
             <>
-                <Error errorMessage={errorMessage} errorType="Server side error" />
+                <Error
+                    errorStatusCode={errorStatusCode}
+                    errorMessage={errorMessage}
+                    errorType="Server side error"
+                />
                 <Link to="/customers" className="block my-4 inline-block">
                     ← Go back
                 </Link>

@@ -8,81 +8,29 @@ import useFetch from "../hooks/UseFetch";
 
 export default function Customers() {
     const [loggedIn, setLoggedIn] = useContext(LoginContext);
-    //const [customers, setCustomers] = useState();
-    //const [notFound, setNotFound] = useState();
-    //const [errorMessage, setErrorMessage] = useState();
     const navigate = useNavigate();
     const currentUrl = useLocation();
 
-    const url = baseUrl + "/api/customers";
-    const [customers, errorStatusCode] = useFetch(url, "GET", {
-        Authorization: "Bearer " + localStorage.getItem("accessToken"),
-        "Content-Type": "application/json"
+    const url = baseUrl + "/api/customers/";
+    const {
+        request,
+        appendData,
+        data: { customers } = {},
+        errorStatusCode
+    } = useFetch(url, {
+        method: "GET",
+        headers: {
+            Authorization: "Bearer " + localStorage.getItem("accessToken"),
+            "Content-Type": "application/json"
+        }
     });
 
-    // useEffect(() => {
-    //     fetch(url, {
-    //         headers: {
-    //             Authorization: "Bearer " + localStorage.getItem("accessToken"),
-    //             "Content-Type": "application/json"
-    //         }
-    //     })
-    //         .then((response) => {
-    //             if (response.status === 200) {
-    //                 setNotFound(false);
-    //                 return response.json();
-    //             } else if (response.status === 401) {
-    //                 setLoggedIn(false);
-    //                 navigate("/login", {
-    //                     state: {
-    //                         previousUrl: currentUrl
-    //                     }
-    //                 });
-    //             } else if (response.status === 404) {
-    //                 setNotFound(true);
-    //                 setErrorMessage("Wrong url path or customers api is offline.");
-    //                 throw new Error("Wrong url path or customers api is offline.");
-    //             } else if (!response.status === 200) {
-    //                 setNotFound(true);
-    //                 setErrorMessage("Something went wrong, try again later.");
-    //                 throw new Error("Something went wrong, try again later.");
-    //             }
-    //         })
-    //         .then((data) => {
-    //             setCustomers(data.customers);
-    //             setNotFound(false);
-    //         })
-    //         .catch((error) => {});
-    // }, []);
+    useEffect(() => {
+        request();
+    }, []);
 
     function addCustomer(name, industry) {
-        const data = { name: name, industry: industry };
-        const url = baseUrl + "/api/customers/";
-        fetch(url, {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("accessToken"),
-                "Content-Type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(data)
-        })
-            .then((response) => {
-                if (response.status === 401) {
-                    setLoggedIn(false);
-                    navigate("/login", {
-                        state: {
-                            previousUrl: currentUrl
-                        }
-                    });
-                } else if (!response.ok) {
-                    throw new Error("Something went wrong! Customer wasnt created.");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setCustomers([...customers, data.customer]);
-            })
-            .catch((e) => {});
+        appendData({ name: name, industry: industry });
     }
 
     if (errorStatusCode !== undefined && errorStatusCode === 404) {
@@ -91,6 +39,16 @@ export default function Customers() {
                 <Error
                     errorStatusCode={errorStatusCode}
                     errorMessage="Wrong url path or customers api is offline."
+                />
+            </>
+        );
+    } else if (errorStatusCode >= 500 && errorStatusCode < 600 && errorStatusCode !== undefined) {
+        return (
+            <>
+                <Error
+                    statusCode={errorStatusCode}
+                    errorMessage="Try again later."
+                    errorType="Server side error."
                 />
             </>
         );
